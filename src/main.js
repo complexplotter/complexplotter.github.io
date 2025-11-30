@@ -134,15 +134,21 @@ function getColor(im, planeCounter) {
     const color = new THREE.Color();
     const colorneg = new THREE.Color(0x0000ff);
     const colorpos = new THREE.Color(0xff0000);
-    /*let modulo = planeCounter % 2;
-    switch(modulo) {
-        case 0:
-            colorneg.set(new THREE.Color(0x0000ff));
-            colorpos.set(new THREE.Color(0xff0000));
-        case 1:
-            colorneg.set(new THREE.Color(0x00ffff));
-            colorpos.set(new THREE.Color(0xffff00));
-    }*/
+    let modulo = planeCounter-1 % 3;
+    if(modulo===0) {
+        colorneg.set(new THREE.Color(0x0000ff));
+        colorpos.set(new THREE.Color(0xff0000));
+    } else if(modulo===1) {
+        colorneg.set(new THREE.Color(0xffff00));
+        colorpos.set(new THREE.Color(0xff00ff));
+    } else if(modulo===2) {
+        colorneg.set(new THREE.Color(0x00ffff));
+        colorpos.set(new THREE.Color(0xff8800));
+    } else {
+        colorneg.set(new THREE.Color(0x00ff00));
+        colorpos.set(new THREE.Color(0xaa00ff));
+    }
+   
     const c = 1;
     colorneg.set(colorneg.r*c*-im/gridSize, colorneg.g*c*-im/gridSize, colorneg.b*c*-im/gridSize);
     colorpos.set(colorpos.r*c*im/gridSize, colorpos.g*c*im/gridSize, colorpos.b*c*im/gridSize);
@@ -171,7 +177,6 @@ function load() {
     plane.name = planeName;
     scene.add(plane);
     loadedPlanes.push(plane);
-    alert(planeCounter);
     
     const newBox = storeInput(planeCounter, functionText.value);
     inputs.appendChild(newBox);
@@ -205,7 +210,6 @@ function load() {
 
 function reload() {
     const oldPlanes = loadedPlanes;
-    alert('length:'.concat(oldPlanes.length));
     oldPlanes.forEach(element => {
         const id = parseInt(element.name.replace(/[^\d]/g, ''));
         removePlane(id);
