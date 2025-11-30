@@ -22,6 +22,11 @@ label {
     flex-direction: column;
     align-items: flex-end;
 }
+#input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
 #settings-menu {
     position: relative;
     top: 10px;
@@ -29,6 +34,25 @@ label {
     border-radius: 5px;
     line-height: 30px;
     padding: 15px;
+}
+#input-menu {
+    position: relative;
+    top: 10px;
+    background-color: #261a26;
+    border-radius: 5px;
+    line-height: 30px;
+    padding: 15px;
+}
+.input-box {
+    margin-top: 5px;
+    background-color: #261a26;
+    border-radius: 5px;
+    border-color: #473647;
+    border-style: solid;
+    line-height: 30px;
+    padding: 15px;
+    color: white;
+    font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
 }
 #gridsize-textbox {
     position: relative;
