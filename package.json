@@ -16,6 +16,7 @@
   "dependencies": {
     "gh-pages": "^6.3.0",
     "mathjs": "^15.1.0",
+    "nerdamer": "^1.1.13",
     "three": "^0.180.0"
   }
 }

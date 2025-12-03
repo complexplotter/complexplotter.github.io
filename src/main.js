@@ -134,7 +134,7 @@ function getColor(im, planeCounter) {
     const color = new THREE.Color();
     const colorneg = new THREE.Color(0x0000ff);
     const colorpos = new THREE.Color(0xff0000);
-    let modulo = planeCounter-1 % 3;
+    let modulo = ((planeCounter-1 % 4) + 4) % 4;
     if(modulo===0) {
         colorneg.set(new THREE.Color(0x0000ff));
         colorpos.set(new THREE.Color(0xff0000));
@@ -286,7 +286,12 @@ resolutionText.addEventListener('keyup', (event) => {
 
 
 function showSettings(){
-    settings.hidden = !settings.hidden;
+    if(settings.style.visibility == "hidden") {
+        settings.style.visibility = "visible";
+    }
+    else {
+        settings.style.visibility = "hidden";
+    }
 }
 
 btn2.addEventListener('click', showSettings);
