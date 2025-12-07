@@ -1,3 +1,11 @@
+:root {
+    --main-color: #261f30;
+    --inside-color: oklch(from var(--main-color) calc(l*1.2) c h);
+    --accent-color: oklch(from var(--main-color) calc(l * 2.8) c h);
+    --hover-color: oklch(from var(--main-color) calc(l*2.4) c h);
+    --active-color: oklch(from var(--main-color) calc(l*2.2) c h);
+    --text-color: #ffffff;
+}
 canvas {
     position: fixed;
     top: 0;
@@ -10,7 +18,7 @@ canvas {
     border: 1px solid black;
 }
 label {
-    color: white;
+    color: var(--text-color);
     font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
 }
 #function-textbox {
@@ -30,29 +38,106 @@ label {
 #settings-menu {
     position: relative;
     top: 10px;
-    background-color: #261a26;
+    background-color: var(--main-color);
     border-radius: 5px;
     line-height: 30px;
     padding: 15px;
 }
 #input-menu {
     position: relative;
-    top: -80px;
-    background-color: #261a26;
+    top: -110px;
+    background-color: var(--main-color);
     border-radius: 5px;
     line-height: 30px;
     padding: 15px;
 }
 .input-box {
     margin-top: 5px;
-    background-color: #261a26;
+    background-color: var(--inside-color);
     border-radius: 5px;
-    border-color: #473647;
+    border-color: var(--accent-color);
     border-style: solid;
     line-height: 30px;
     padding: 15px;
-    color: white;
-    font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+    color: var(--text-color);
+    font-family: 'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+}
+.color-input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    transform: translateY(6px);
+}
+.color-input::-webkit-color-swatch-wrapper{
+    padding: 0;
+    width: 25px;
+}
+.color-input::-webkit-color-swatch{
+    border: none;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: var(--accent-color);
+}
+.color-input::-webkit-color-swatch:hover{
+    border: none;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: var(--hover-color);
+}
+.color-input::-webkit-color-swatch:active{
+    border: none;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: var(--active-color);
+}
+.material-icons {
+    transform: translate(-32%, -10%);
+}
+.hide-button {
+    border-width: 3px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    background-color: var(--inside-color);
+    transform: translateY(5px);
+    overflow: hidden;
+}
+.hide-button:hover {
+    border-color: var(--hover-color);
+    color: var(--hover-color); 
+}
+.hide-button:active {
+    border-color: var(--active-color);
+    color: var(--active-color); 
+}
+.close-button {
+    margin: 3px;
+    border-width: 3px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    background-color: var(--inside-color);
+    transform: translateY(5px);
+    overflow: hidden;
+}
+.close-button:hover {
+    border-color: var(--hover-color);
+    color: var(--hover-color);  
+}
+.close-button:active {
+    border-color: var(--active-color);
+    color: var(--active-color); 
 }
 #gridsize-textbox {
     position: relative;
@@ -66,13 +151,22 @@ label {
     z-index: 2;
     width: 50px;
 }
-#btn1 {
-    position:absolute;
+#enter-button {
+    position: absolute;
     z-index: 2;
     left: 185px;
 }
-#btn2 {
+#settings-button {
     position: relative;
-    z-index: 3;
-    width: 75px;
+    width: 30px;
+    height: 30px;
+}
+#input-menu-button {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    top: -125px;
+}
+#show-inputs-icon {
+    transform: translateX(-20%);
 }

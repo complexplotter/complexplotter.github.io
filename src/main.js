@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as math from 'mathjs';
 
+
 /*class ComplexNumber {
     constructor(a, b) {
         this.a = a;
@@ -71,10 +72,13 @@ import * as math from 'mathjs';
     }
 }*/
 
-const btn1 = document.getElementById('btn1');
+const enterButton = document.getElementById('enter-button');
+const settingsButton = document.getElementById('settings-button');
+const inputMenuButton = document.getElementById('input-menu-button');
 const functionText = document.getElementById('function-textbox');
 const gridSizeText = document.getElementById('gridsize-textbox');
 const resolutionText = document.getElementById('resolution-textbox');
+const menuColorInput = document.getElementById('menu-color-input');
 const settings = document.getElementById('settings-menu');
 const inputs = document.getElementById('input-menu');
 
@@ -110,49 +114,90 @@ scene.add(xAxis, zAxis);
 xAxis.rotateZ(Math.PI/2);
 zAxis.rotateX(Math.PI/2);
 
-function storeInput(planeCounter, expression) {
-    const box = document.createElement('div');
-    box.textContent = String.fromCharCode(96+planeCounter).concat('(z) = ').concat(expression).concat(' ');
-    box.id = planeCounter;
-    box.className = 'input-box';
-    const closeButton = document.createElement('button')
-    closeButton.textContent = 'X';
-    closeButton.className = 'close-button';
-    closeButton.addEventListener('click', (event) => {
-        removePlane(parseInt(box.id));
-    });
-    box.appendChild(closeButton);
-    return box;
-}
+
 
 const loadedPlanes = [];
 const scope = new Map();
-const planeFunctions = new Map();
+const planeFunctions = new Map();   
+const planeColors = new Map();     
 let planeCounter = 0;
 
-function getColor(im, planeCounter) {
+
+function storeInput(planeCounter, expression, colorScheme) {
+    const box = document.createElement('div');
+    
+    box.id = planeCounter;
+    box.className = 'input-box';
+
+    const colorInputNeg = document.createElement('input');
+    colorInputNeg.type = 'color';
+    colorInputNeg.value = colorScheme[0];
+    colorInputNeg.className = 'color-input';
+    box.appendChild(colorInputNeg);
+    colorInputNeg.addEventListener('change', (event) => {
+        planeColors.set(planeCounter, [colorInputNeg.value, colorInputPos.value]);
+        reload(planeCounter);
+    });
+
+    const colorInputPos = document.createElement('input');
+    colorInputPos.type = 'color';
+    colorInputPos.value = colorScheme[1];
+    colorInputPos.className = 'color-input';
+    box.appendChild(colorInputPos);
+    colorInputPos.addEventListener('change', (event) => {
+        planeColors.set(planeCounter, [colorInputNeg.value, colorInputPos.value]);
+        reload(planeCounter);
+    });
+
+    const text = document.createElement('label');
+    text.textContent = ` ${String.fromCharCode(96+planeCounter)}(z) = ${expression} `;
+    box.appendChild(text);
+
+    const hideButton = document.createElement('button');
+    hideButton.className = 'hide-button';
+    const eye = document.createElement('span');
+    eye.className = 'material-icons';
+    eye.textContent = 'visibility';
+    hideButton.addEventListener('click', (event) => {
+        const plane = scene.getObjectByName(`ComplexPlane${planeCounter}`);
+        if(plane.visible) {
+            eye.textContent = 'visibility_off';
+            plane.visible = false;
+        }
+        else {
+            eye.textContent = 'visibility';
+            plane.visible = true;
+        }
+    });
+    hideButton.appendChild(eye);
+    box.appendChild(hideButton);
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    const cross = document.createElement('span');
+    cross.className = 'material-icons';
+    cross.textContent = 'close';
+    closeButton.addEventListener('click', (event) => {
+        removePlane(planeCounter);
+    });
+    closeButton.appendChild(cross);
+    box.appendChild(closeButton);
+
+    return box;
+}
+
+
+function getColor(im, colorScheme) {
     const color = new THREE.Color();
-    const colorneg = new THREE.Color(0x0000ff);
-    const colorpos = new THREE.Color(0xff0000);
-    let modulo = ((planeCounter-1 % 4) + 4) % 4;
-    if(modulo===0) {
-        colorneg.set(new THREE.Color(0x0000ff));
-        colorpos.set(new THREE.Color(0xff0000));
-    } else if(modulo===1) {
-        colorneg.set(new THREE.Color(0xffff00));
-        colorpos.set(new THREE.Color(0xff00ff));
-    } else if(modulo===2) {
-        colorneg.set(new THREE.Color(0x00ffff));
-        colorpos.set(new THREE.Color(0xff8800));
-    } else {
-        colorneg.set(new THREE.Color(0x00ff00));
-        colorpos.set(new THREE.Color(0xaa00ff));
-    }
-   
+    const colorNeg = new THREE.Color();
+    const colorPos = new THREE.Color();
+    colorNeg.set(colorScheme[0]);
+    colorPos.set(colorScheme[1]);
+    
     const c = 1;
-    colorneg.set(colorneg.r*c*-im/gridSize, colorneg.g*c*-im/gridSize, colorneg.b*c*-im/gridSize);
-    colorpos.set(colorpos.r*c*im/gridSize, colorpos.g*c*im/gridSize, colorpos.b*c*im/gridSize);
-    return im <= 0 ? color.set(colorneg) : color.set(colorpos);
+    colorNeg.set(colorNeg.r*c*-im/gridSize, colorNeg.g*c*-im/gridSize, colorNeg.b*c*-im/gridSize);
+    colorPos.set(colorPos.r*c*im/gridSize, colorPos.g*c*im/gridSize, colorPos.b*c*im/gridSize);
+    return im <= 0 ? color.set(colorNeg) : color.set(colorPos);
 }
 
 function removePlane(id) {
@@ -177,11 +222,33 @@ function load() {
     plane.name = planeName;
     scene.add(plane);
     loadedPlanes.push(plane);
+
+    const expression = functionText.value;
+
+    let colorNeg = '#0000ff';
+    let colorPos = '#ff0000';
+    let modulus = ((planeCounter-1 % 4) + 4) % 4;
     
-    const newBox = storeInput(planeCounter, functionText.value);
+    if(modulus===0) {
+        colorNeg = '#0000ff';
+        colorPos = '#ff0000';
+    } else if(modulus===1) {
+        colorNeg = '#ffff00';
+        colorPos = '#ff00ff';
+    } else if(modulus===2) {
+        colorNeg = '#00ffff';
+        colorPos = '#ff8800';
+    } else {
+        colorNeg = '#00ff00';
+        colorPos = '#aa00ff';
+    }
+    let colorScheme = [colorNeg, colorPos];
+    planeColors.set(planeCounter, colorScheme);
+    
+    const newBox = storeInput(planeCounter, expression, colorScheme);
     inputs.appendChild(newBox);
 
-    planeFunctions.set(planeCounter, functionText.value);
+    planeFunctions.set(planeCounter, expression);
     
     
     plane.rotation.x = -Math.PI/2;
@@ -192,12 +259,12 @@ function load() {
     for (let i = 0; i < positionAttribute.count; i++) {
 	    vertex.fromBufferAttribute(positionAttribute, i);
         const z = math.complex(vertex.x, vertex.y);
-        const func = math.evaluate(String.fromCodePoint(96+planeCounter).concat('(z) = ').concat(functionText.value))
+        const func = math.evaluate(String.fromCodePoint(96+planeCounter).concat('(z) = ').concat(expression));
         scope.set('z', z);
         scope.set(String.fromCodePoint(96+planeCounter), func);
-        const result = math.evaluate(functionText.value, scope);
+        const result = math.evaluate(expression, scope);
 	    vertex.z = math.re(result);
-        const color = getColor(math.im(result), planeCounter);
+        const color = getColor(math.im(result), colorScheme);
         colors[colorIndex++] = color.r;
         colors[colorIndex++] = color.g;
         colors[colorIndex++] = color.b;
@@ -208,85 +275,102 @@ function load() {
     functionText.value = "";
 }
 
-function reload() {
+function reloadAll() {
     const oldPlanes = loadedPlanes;
     oldPlanes.forEach(element => {
         const id = parseInt(element.name.replace(/[^\d]/g, ''));
-        removePlane(id);
-        const planeGeometry = new THREE.PlaneGeometry(gridSize, gridSize, resolution, resolution);
-        const planeMaterial = new THREE.MeshBasicMaterial({vertexColors: true, wireframe: false, side: THREE.DoubleSide});
-        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-        const planeName = element.name;
-        plane.name = planeName;
-        scene.add(plane);
-        loadedPlanes.splice(id-1, 0, plane);
-        const func = planeFunctions.get(id);
-    
-        const newBox = storeInput(id, func);
-        inputs.appendChild(newBox);
-    
-        plane.rotation.x = -Math.PI/2;
-        const positionAttribute = planeGeometry.getAttribute('position');
-        const vertex = new THREE.Vector3();
-        const colors = [];
-        let colorIndex = 0;
-        for (let i = 0; i < positionAttribute.count; i++) {
-	        vertex.fromBufferAttribute(positionAttribute, i);
-            const z = math.complex(vertex.x, vertex.y);
-            scope.set('z', z);
-            const result = math.evaluate(func, scope);
-	        vertex.z = math.re(result);
-            const color = getColor(math.im(result), id);
-            colors[colorIndex++] = color.r;
-            colors[colorIndex++] = color.g;
-            colors[colorIndex++] = color.b;
-
-	        positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
-            planeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    }
+        reload(id);
     });
 }
 
-btn1.addEventListener('click', load);
+function reload(id) {
+    removePlane(id);
+    const planeGeometry = new THREE.PlaneGeometry(gridSize, gridSize, resolution, resolution);
+    const planeMaterial = new THREE.MeshBasicMaterial({vertexColors: true, wireframe: false, side: THREE.DoubleSide});
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    const planeName = `ComplexPlane${id}`;
+    plane.name = planeName;
+    scene.add(plane);
+    loadedPlanes.splice(id-1, 0, plane);
+    
+
+    const expression = planeFunctions.get(id);
+        
+    let colorScheme = planeColors.get(id);
+    
+    const newBox = storeInput(id, expression, colorScheme);
+    inputs.appendChild(newBox);
+    
+    plane.rotation.x = -Math.PI/2;
+    const positionAttribute = planeGeometry.getAttribute('position');
+    const vertex = new THREE.Vector3();
+    const colors = [];
+    let colorIndex = 0;
+    for (let i = 0; i < positionAttribute.count; i++) {
+	    vertex.fromBufferAttribute(positionAttribute, i);
+        const z = math.complex(vertex.x, vertex.y);
+        const func = math.evaluate(String.fromCodePoint(96+planeCounter).concat('(z) = ').concat(expression));
+        scope.set('z', z);
+        scope.set(String.fromCodePoint(96+id), func);
+        const result = math.evaluate(expression, scope);
+	    vertex.z = math.re(result);
+        const color = getColor(math.im(result), colorScheme);
+        colors[colorIndex++] = color.r;
+        colors[colorIndex++] = color.g;
+        colors[colorIndex++] = color.b;
+	    positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+        planeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    }
+}
+
+enterButton.addEventListener('click', load);
 functionText.addEventListener('keyup', (event) => {
-    if(event.key=='Enter') {
+    if(event.key == 'Enter') {
         functionText.blur();
-        btn1.click();
+        enterButton.click();
     }
 });
 
 gridSizeText.addEventListener('blur', (event) => {
-    gridSize = gridSizeText.value;
-    scene.remove(xAxis, zAxis, gridHelper);
-    axisGeometry = new THREE.CylinderGeometry(0.02, 0.02, gridSize, 10, 1, false);
-    xAxis = new THREE.Mesh(axisGeometry, axisMaterial);
-    zAxis = new THREE.Mesh(axisGeometry, axisMaterial);
-    xAxis.rotateZ(Math.PI/2);
-    zAxis.rotateX(Math.PI/2);
-    gridHelper = new THREE.GridHelper(gridSize, gridSize);
-    scene.add(xAxis, zAxis, gridHelper);
-    reload();
+    if(gridSize != gridSizeText.value) {
+        gridSize = gridSizeText.value;
+        scene.remove(xAxis, zAxis, gridHelper);
+        axisGeometry = new THREE.CylinderGeometry(0.02, 0.02, gridSize, 10, 1, false);
+        xAxis = new THREE.Mesh(axisGeometry, axisMaterial);
+        zAxis = new THREE.Mesh(axisGeometry, axisMaterial);
+        xAxis.rotateZ(Math.PI/2);
+        zAxis.rotateX(Math.PI/2);
+        gridHelper = new THREE.GridHelper(gridSize, gridSize);
+        scene.add(xAxis, zAxis, gridHelper);
+        reloadAll();
+    }
 });
 gridSizeText.addEventListener('keyup', (event) => {
-    if(event.key=='Enter') {
+    if(event.key === 'Enter') {
         gridSizeText.blur();
     }
 });
 
 
 resolutionText.addEventListener('blur', (event) => {
-    resolution = resolutionText.value;
-    reload();
+    if(resolution != resolutionText.value) {
+        resolution = resolutionText.value;
+        reloadAll();
+    }
 });
 resolutionText.addEventListener('keyup', (event) => {
-    if(event.key=='Enter') {
+    if(event.key === 'Enter') {
         resolutionText.blur();
     }
 });
 
+menuColorInput.addEventListener('input', (event) => {
+    const mainColor = menuColorInput.value;
+    document.documentElement.style.setProperty('--main-color', mainColor);
+});
 
 function showSettings(){
-    if(settings.style.visibility == "hidden") {
+    if(settings.style.visibility === "hidden") {
         settings.style.visibility = "visible";
     }
     else {
@@ -294,7 +378,17 @@ function showSettings(){
     }
 }
 
-btn2.addEventListener('click', showSettings);
+function showInputs(){
+    if(inputs.style.visibility === "hidden") {
+        inputs.style.visibility = "visible";
+    }
+    else {
+        inputs.style.visibility = "hidden";
+    }
+}
+
+settingsButton.addEventListener('click', showSettings);
+inputMenuButton.addEventListener('click', showInputs);
 
 
 
