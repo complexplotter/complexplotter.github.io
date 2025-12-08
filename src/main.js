@@ -75,6 +75,9 @@ import * as math from 'mathjs';
 const enterButton = document.getElementById('enter-button');
 const settingsButton = document.getElementById('settings-button');
 const inputMenuButton = document.getElementById('input-menu-button');
+const reloadSizeButton = document.getElementById('reload-button-size');
+const reloadResButton = document.getElementById('reload-button-res');
+const reloadColorButton = document.getElementById('reload-button-color');
 const functionText = document.getElementById('function-textbox');
 const gridSizeText = document.getElementById('gridsize-textbox');
 const resolutionText = document.getElementById('resolution-textbox');
@@ -82,8 +85,26 @@ const menuColorInput = document.getElementById('menu-color-input');
 const settings = document.getElementById('settings-menu');
 const inputs = document.getElementById('input-menu');
 
-let gridSize = 8;
-let resolution = 64;
+document.documentElement.style.setProperty('--main-color', localStorage.getItem('mainColor'));
+menuColorInput.value = localStorage.getItem('mainColor');
+
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register(
+        'service-worker.js'
+    )
+    .then(function(registration) {
+        console.log('Registered:', registration);
+    }).catch(function(error) {
+        console.log('Registration failed:', error);
+    })
+}
+const defaultGridSize = 8;
+const defaultResolution = 64;
+const defaultMainColor = '#261f30';
+
+let gridSize = defaultGridSize;
+let resolution = defaultResolution;
+let mainColor = menuColorInput.value;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -133,7 +154,12 @@ function storeInput(planeCounter, expression, colorScheme) {
     colorInputNeg.type = 'color';
     colorInputNeg.value = colorScheme[0];
     colorInputNeg.className = 'color-input';
+    const minus = document.createElement('span');
+    minus.className = 'material-icons';
+    minus.id = 'minus-icon';
+    minus.textContent = 'remove';
     box.appendChild(colorInputNeg);
+    box.appendChild(minus);
     colorInputNeg.addEventListener('change', (event) => {
         planeColors.set(planeCounter, [colorInputNeg.value, colorInputPos.value]);
         reload(planeCounter);
@@ -143,7 +169,12 @@ function storeInput(planeCounter, expression, colorScheme) {
     colorInputPos.type = 'color';
     colorInputPos.value = colorScheme[1];
     colorInputPos.className = 'color-input';
+    const plus = document.createElement('span');
+    plus.className = 'material-icons';
+    plus.id = 'plus-icon';
+    plus.textContent = 'add';
     box.appendChild(colorInputPos);
+    box.appendChild(plus);
     colorInputPos.addEventListener('change', (event) => {
         planeColors.set(planeCounter, [colorInputNeg.value, colorInputPos.value]);
         reload(planeCounter);
@@ -333,6 +364,7 @@ functionText.addEventListener('keyup', (event) => {
 
 gridSizeText.addEventListener('blur', (event) => {
     if(gridSize != gridSizeText.value) {
+        reloadSizeButton.style.visibility = 'visible';
         gridSize = gridSizeText.value;
         scene.remove(xAxis, zAxis, gridHelper);
         axisGeometry = new THREE.CylinderGeometry(0.02, 0.02, gridSize, 10, 1, false);
@@ -354,6 +386,7 @@ gridSizeText.addEventListener('keyup', (event) => {
 
 resolutionText.addEventListener('blur', (event) => {
     if(resolution != resolutionText.value) {
+        reloadResButton.style.visibility = 'visible';
         resolution = resolutionText.value;
         reloadAll();
     }
@@ -365,16 +398,42 @@ resolutionText.addEventListener('keyup', (event) => {
 });
 
 menuColorInput.addEventListener('input', (event) => {
-    const mainColor = menuColorInput.value;
-    document.documentElement.style.setProperty('--main-color', mainColor);
+    if(localStorage.getItem('mainColor') != menuColorInput.value) {
+        reloadColorButton.style.visibility = 'visible';
+        mainColor = menuColorInput.value;
+        localStorage.setItem('mainColor', mainColor);
+        document.documentElement.style.setProperty('--main-color', mainColor);
+    }
 });
 
 function showSettings(){
     if(settings.style.visibility === "hidden") {
         settings.style.visibility = "visible";
+        if(menuColorInput.value != defaultMainColor) {
+            reloadColorButton.style.visibility = 'visible';
+        }
+        else {
+            reloadColorButton.style.visibility = 'hidden';
+        }
+        if(gridSizeText.value != defaultGridSize) {
+            reloadSizeButton.style.visibility = 'visible';
+        }
+        else {
+            reloadSizeButton.style.visibility = 'hidden';
+        }
+        if(resolutionText.value != defaultResolution) {
+            reloadResButton.style.visibility = 'visible';
+        }
+        else {
+            reloadResButton.style.visibility = 'hidden';
+        }
+        
     }
     else {
         settings.style.visibility = "hidden";
+        reloadSizeButton.style.visibility = 'hidden';
+        reloadResButton.style.visibility = 'hidden';
+        reloadColorButton.style.visibility = 'hidden';
     }
 }
 
@@ -389,6 +448,36 @@ function showInputs(){
 
 settingsButton.addEventListener('click', showSettings);
 inputMenuButton.addEventListener('click', showInputs);
+
+reloadSizeButton.addEventListener('click', (event) => {
+    reloadSizeButton.style.visibility = 'hidden';
+    gridSize = defaultGridSize;
+    gridSizeText.value = defaultGridSize;
+    scene.remove(xAxis, zAxis, gridHelper);
+    axisGeometry = new THREE.CylinderGeometry(0.02, 0.02, gridSize, 10, 1, false);
+    xAxis = new THREE.Mesh(axisGeometry, axisMaterial);
+    zAxis = new THREE.Mesh(axisGeometry, axisMaterial);
+    xAxis.rotateZ(Math.PI/2);
+    zAxis.rotateX(Math.PI/2);
+    gridHelper = new THREE.GridHelper(gridSize, gridSize);
+    scene.add(xAxis, zAxis, gridHelper);
+    reloadAll();
+});
+
+reloadResButton.addEventListener('click', (event) => {
+    reloadResButton.style.visibility = 'hidden';
+    resolution = defaultResolution;
+    resolutionText.value = defaultResolution;
+    reloadAll();
+});
+
+reloadColorButton.addEventListener('click', (event) => {
+    reloadColorButton.style.visibility = 'hidden';
+    mainColor = defaultMainColor;
+    menuColorInput.value = defaultMainColor;
+    localStorage.setItem('mainColor', mainColor);
+    document.documentElement.style.setProperty('--main-color', mainColor);
+});
 
 
 

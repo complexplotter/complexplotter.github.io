@@ -45,7 +45,7 @@ label {
 }
 #input-menu {
     position: relative;
-    top: -110px;
+    top: -120px;
     background-color: var(--main-color);
     border-radius: 5px;
     line-height: 30px;
@@ -165,8 +165,44 @@ label {
     position: relative;
     width: 30px;
     height: 30px;
-    top: -125px;
+    top: -135px;
 }
-#show-inputs-icon {
-    transform: translateX(-20%);
+#menu-span-0 {
+    margin: 0.11em;
+}
+#settings-span-0 {
+    margin: 0.11em;
+}
+.reload-button {
+    border: none;
+    color: var(--accent-color);
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    background-color: var(--main-color);
+    margin-left: 5px;
+    transform: translateY(6px);
+    overflow: hidden;
+}
+.reload-button:hover {
+    border-color: var(--hover-color);
+    color: var(--hover-color); 
+}
+.reload-button:active {
+    border-color: var(--active-color);
+    color: var(--active-color); 
+}
+#minus-icon {
+    color: var(--accent-color);
+    width: 5px;
+    height: 5px;
+    transform: translate(-24px, -18px);
+    font-size: 20px;
+}
+#plus-icon {
+    width: 5px;
+    height: 5px;
+    color: var(--accent-color);
+    transform: translate(-23px, -18px);
+    font-size: 20px;
 }
