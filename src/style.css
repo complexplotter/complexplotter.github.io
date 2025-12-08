@@ -243,7 +243,7 @@ label {
     pointer-events: auto;
     position: fixed;
     width: 95%;
-    bottom: 20px;
+    bottom: 10px;
     top: auto;
     display: flex;
     flex-direction: column;
@@ -257,7 +257,7 @@ label {
     position: absolute;
     width: 30px;
     height: 30px;
-    bottom: 34px;
+    bottom: 334px;
     top: auto;
     z-index: 3;
 }
