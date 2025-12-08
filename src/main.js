@@ -92,7 +92,7 @@ menuColorInput.value = localStorage.getItem('mainColor');
 if(('serviceWorker') in navigator) {
     window.addEventListener('load', (event) => {
         navigator.serviceWorker.register(
-        '../service-worker.js'
+        '/service-worker.js'
     );
     });
 }
