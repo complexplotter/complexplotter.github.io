@@ -227,6 +227,41 @@ label {
 #function-textbox {
     pointer-events: auto;
 }
+@media (max-width: 600px) and (display-mode: fullscreen) {
+#input-menu {
+    position: absolute;
+    top: -8px;
+    background-color: var(--main-color);
+    border-radius: 5px;
+    line-height: 30px;
+    padding: 15px;
+    width: 85%;
+}
+#input-container {
+    background-color: var(--main-color);
+    border-radius: 5px;
+    pointer-events: auto;
+    position: fixed;
+    width: 95%;
+    bottom: 10px;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    height: 210px;
+}
+#input-menu-button {
+    pointer-events: auto;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    bottom: 24px;
+    top: auto;
+    z-index: 3;
+}
+}
 @media (max-width: 600px) {
 #input-menu {
     position: absolute;
@@ -243,7 +278,7 @@ label {
     pointer-events: auto;
     position: fixed;
     width: 95%;
-    bottom: 50px;
+    bottom: 10px;
     top: auto;
     display: flex;
     flex-direction: column;
@@ -257,7 +292,7 @@ label {
     position: absolute;
     width: 30px;
     height: 30px;
-    bottom: 64px;
+    bottom: 74px;
     top: auto;
     z-index: 3;
 }
