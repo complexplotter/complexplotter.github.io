@@ -6,16 +6,23 @@
     --active-color: oklch(from var(--main-color) calc(l*2.2) c h);
     --text-color: #ffffff;
 }
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
+body {
+    margin: 0;
 }
-#canvas_container {
-    position: relative;
-    width: 400px;
-    height: 300px;
-    border: 1px solid black;
+#canvas-container {
+    position: fixed;
+    background-color: #0f0d0f;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+}
+#main-container {
+    pointer-events: none;
+    margin: 8px;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
 }
 label {
     color: var(--text-color);
@@ -26,6 +33,8 @@ label {
     z-index: 2;
 }
 #settings-container {
+    position: absolute;
+    right: 16px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -37,15 +46,15 @@ label {
 }
 #settings-menu {
     position: relative;
-    top: 10px;
+    top: 50px;
     background-color: var(--main-color);
     border-radius: 5px;
     line-height: 30px;
     padding: 15px;
 }
 #input-menu {
-    position: relative;
-    top: -120px;
+    position: absolute;
+    top: 70px;
     background-color: var(--main-color);
     border-radius: 5px;
     line-height: 30px;
@@ -63,6 +72,7 @@ label {
     font-family: 'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
 }
 .color-input {
+    pointer-events: auto;
     -webkit-appearance: none;
     appearance: none;
     width: 28px;
@@ -97,6 +107,7 @@ label {
     transform: translate(-32%, -10%);
 }
 .hide-button {
+    pointer-events: auto;
     border-width: 3px;
     border-radius: 5px;
     border-style: solid;
@@ -118,6 +129,7 @@ label {
     color: var(--active-color); 
 }
 .close-button {
+    pointer-events: auto;
     margin: 3px;
     border-width: 3px;
     border-radius: 5px;
@@ -140,32 +152,37 @@ label {
     color: var(--active-color); 
 }
 #gridsize-textbox {
+    pointer-events: auto;
     position: relative;
     left: 5px;
     z-index: 2;
     width: 50px;
 }
 #resolution-textbox {
+    pointer-events: auto;
     position: relative;
     left: 5px;
     z-index: 2;
     width: 50px;
 }
 #enter-button {
+    pointer-events: auto;
     position: absolute;
     z-index: 2;
-    left: 185px;
+    left: 176px;
 }
 #settings-button {
-    position: relative;
+    pointer-events: auto;
+    position: absolute;
     width: 30px;
     height: 30px;
 }
 #input-menu-button {
+    pointer-events: auto;
     position: relative;
     width: 30px;
     height: 30px;
-    top: -135px;
+    top: 25px;
 }
 #menu-span-0 {
     margin: 0.11em;
@@ -174,6 +191,7 @@ label {
     margin: 0.11em;
 }
 .reload-button {
+    pointer-events: auto;
     border: none;
     color: var(--accent-color);
     width: 25px;
@@ -205,4 +223,42 @@ label {
     color: var(--accent-color);
     transform: translate(-23px, -18px);
     font-size: 20px;
+}
+#function-textbox {
+    pointer-events: auto;
+}
+@media (max-width: 600px) {
+#input-menu {
+    position: absolute;
+    top: -8px;
+    background-color: var(--main-color);
+    border-radius: 5px;
+    line-height: 30px;
+    padding: 15px;
+    width: 85%;
+}
+#input-container {
+    background-color: var(--main-color);
+    border-radius: 5px;
+    pointer-events: auto;
+    position: fixed;
+    width: 95%;
+    bottom: 10px;
+    top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    height: 210px;
+}
+#input-menu-button {
+    pointer-events: auto;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    bottom: 25px;
+    top: auto;
+    z-index: 3;
+}
 }

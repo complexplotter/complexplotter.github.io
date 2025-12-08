@@ -84,19 +84,17 @@ const resolutionText = document.getElementById('resolution-textbox');
 const menuColorInput = document.getElementById('menu-color-input');
 const settings = document.getElementById('settings-menu');
 const inputs = document.getElementById('input-menu');
+const inputContainer = document.getElementById('input-container');
 
 document.documentElement.style.setProperty('--main-color', localStorage.getItem('mainColor'));
 menuColorInput.value = localStorage.getItem('mainColor');
 
-if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register(
-        'service-worker.js'
-    )
-    .then(function(registration) {
-        console.log('Registered:', registration);
-    }).catch(function(error) {
-        console.log('Registration failed:', error);
-    })
+if(('serviceWorker') in navigator) {
+    window.addEventListener('load', (event) => {
+        navigator.serviceWorker.register(
+        '/service-worker.js'
+    );
+    });
 }
 const defaultGridSize = 8;
 const defaultResolution = 64;
@@ -108,9 +106,7 @@ let mainColor = menuColorInput.value;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({
-    canvas: document.querySelector('#bg'),
-});
+const renderer = new THREE.WebGLRenderer();
 
 let gridHelper = new THREE.GridHelper(gridSize, gridSize);
 const gridName = 'GridHelper';
@@ -122,6 +118,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x0f0d0f, 1);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
 camera.position.setX(6);
 camera.position.setY(6);
 camera.position.setZ(6);
@@ -246,6 +243,9 @@ function removePlane(id) {
 
 function load() {
     planeCounter++;
+    if(planeCounter===1) {
+        inputContainer.style.visibility = "visible";
+    }
     const planeGeometry = new THREE.PlaneGeometry(gridSize, gridSize, resolution, resolution);
     const planeMaterial = new THREE.MeshBasicMaterial({vertexColors: true, wireframe: false, side: THREE.DoubleSide});
     const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -364,7 +364,12 @@ functionText.addEventListener('keyup', (event) => {
 
 gridSizeText.addEventListener('blur', (event) => {
     if(gridSize != gridSizeText.value) {
-        reloadSizeButton.style.visibility = 'visible';
+        if(gridSizeText.value==defaultGridSize) {
+            reloadSizeButton.style.visibility = 'hidden';
+        }
+        else {
+            reloadSizeButton.style.visibility = 'visible';
+        } 
         gridSize = gridSizeText.value;
         scene.remove(xAxis, zAxis, gridHelper);
         axisGeometry = new THREE.CylinderGeometry(0.02, 0.02, gridSize, 10, 1, false);
@@ -386,7 +391,12 @@ gridSizeText.addEventListener('keyup', (event) => {
 
 resolutionText.addEventListener('blur', (event) => {
     if(resolution != resolutionText.value) {
-        reloadResButton.style.visibility = 'visible';
+        if(resolutionText.value==defaultResolution) {
+            reloadResButton.style.visibility = 'hidden';
+        }
+        else {
+            reloadResButton.style.visibility = 'visible';
+        }
         resolution = resolutionText.value;
         reloadAll();
     }
@@ -399,7 +409,12 @@ resolutionText.addEventListener('keyup', (event) => {
 
 menuColorInput.addEventListener('input', (event) => {
     if(localStorage.getItem('mainColor') != menuColorInput.value) {
-        reloadColorButton.style.visibility = 'visible';
+        if(menuColorInput.value===defaultMainColor) {
+            reloadColorButton.style.visibility = 'hidden';
+        }
+        else {
+            reloadColorButton.style.visibility = 'visible';
+        }
         mainColor = menuColorInput.value;
         localStorage.setItem('mainColor', mainColor);
         document.documentElement.style.setProperty('--main-color', mainColor);
@@ -438,11 +453,11 @@ function showSettings(){
 }
 
 function showInputs(){
-    if(inputs.style.visibility === "hidden") {
-        inputs.style.visibility = "visible";
+    if(inputContainer.style.visibility === "hidden") {
+        inputContainer.style.visibility = "visible";
     }
     else {
-        inputs.style.visibility = "hidden";
+        inputContainer.style.visibility = "hidden";
     }
 }
 
@@ -487,6 +502,8 @@ window.addEventListener('resize', (event) => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 });
+
+
 
 function animate() {
     requestAnimationFrame(animate);
