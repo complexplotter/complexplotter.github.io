@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Complex Function Plotter</title>
-    <script type="module" crossorigin src="/assets/index-BfkIDgrA.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CPl3L3xk.css">
+    <script type="module" crossorigin src="/assets/index-DRC93s_G.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-houRzyWC.css">
   </head>
   <body style="background-color:#0f0d0f;">
     <div id="canvas-container">
@@ -15,20 +15,23 @@
       <input type="text" id="function-textbox" placeholder="Insert complex function f(z)" autocomplete="off" autocapitalize="off">
       <button id="enter-button">Enter</button>
       <div id="settings-container">
-        <button id="settings-button" class="hide-button"><span id="show-inputs-icon" class="material-icons">settings</span></button>
+        <button id="settings-button" class="hide-button"><span id="settings-span-0" class="material-icons">settings</span></button>
         <div id="settings-menu" style="visibility:hidden">
           <label>Grid Size:</label>
           <input type="text" id="gridsize-textbox" value="8" autocomplete="off" autocapitalize="off">
+          <button id="reload-button-size" class="reload-button" style="visibility:hidden"><span id="refresh-span-0" class="material-icons">refresh</span></button>
           <br>
           <label>Resolution:</label>
           <input type="text" id="resolution-textbox" value="64" autocomplete="off" autocapitalize="off">
+          <button id="reload-button-res" class="reload-button" style="visibility:hidden"><span id="refresh-span-1" class="material-icons">refresh</span></button>
           <br>
           <label>Menu Color:</label>
           <input type="color" id="menu-color-input" class="color-input" value="#261f30" autocomplete="off" autocapitalize="off">
+          <button id="reload-button-color" class="reload-button" style="visibility:hidden"><span id="refresh-span-2" class="material-icons">refresh</span></button>
         </div>
       </div>
       <div id="input-container">
-        <button id="input-menu-button" class="hide-button"><span id="show-inputs-icon" class="material-icons">menu</span></button>
+        <button id="input-menu-button" class="hide-button"><span id="menu-span-0" class="material-icons">menu</span></button>
         <div id="input-menu"></div>
       </div>
     </div>
