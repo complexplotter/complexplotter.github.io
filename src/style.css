@@ -261,4 +261,21 @@ label {
     top: auto;
     z-index: 3;
 }
+.material-icons {
+    transform: translate(-32%, -12%);
+}
+#minus-icon {
+    color: var(--accent-color);
+    width: 5px;
+    height: 5px;
+    transform: translate(-24px, -18px);
+    font-size: 20px;
+}
+#plus-icon {
+    width: 5px;
+    height: 5px;
+    color: var(--accent-color);
+    transform: translate(-23px, -18px);
+    font-size: 20px;
+}
 }

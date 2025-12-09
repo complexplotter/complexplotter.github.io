@@ -86,9 +86,6 @@ const settings = document.getElementById('settings-menu');
 const inputs = document.getElementById('input-menu');
 const inputContainer = document.getElementById('input-container');
 
-document.documentElement.style.setProperty('--main-color', localStorage.getItem('mainColor'));
-menuColorInput.value = localStorage.getItem('mainColor');
-
 if(('serviceWorker') in navigator) {
     window.addEventListener('load', (event) => {
         navigator.serviceWorker.register(
@@ -96,9 +93,18 @@ if(('serviceWorker') in navigator) {
     );
     });
 }
+
 const defaultGridSize = 8;
 const defaultResolution = 64;
 const defaultMainColor = '#261f30';
+
+document.documentElement.style.setProperty('--main-color', localStorage.getItem('mainColor'));
+if(localStorage.getItem('mainColor')!=null) {
+    menuColorInput.value = localStorage.getItem('mainColor');
+}
+else {
+     menuColorInput.value = defaultMainColor;
+}
 
 let gridSize = defaultGridSize;
 let resolution = defaultResolution;
@@ -159,7 +165,7 @@ function storeInput(planeCounter, expression, colorScheme) {
     box.appendChild(minus);
     colorInputNeg.addEventListener('change', (event) => {
         planeColors.set(planeCounter, [colorInputNeg.value, colorInputPos.value]);
-        reload(planeCounter);
+        tempReload(planeCounter);
     });
 
     const colorInputPos = document.createElement('input');
@@ -174,7 +180,7 @@ function storeInput(planeCounter, expression, colorScheme) {
     box.appendChild(plus);
     colorInputPos.addEventListener('change', (event) => {
         planeColors.set(planeCounter, [colorInputNeg.value, colorInputPos.value]);
-        reload(planeCounter);
+        tempReload(planeCounter);
     });
 
     const text = document.createElement('label');
@@ -331,6 +337,48 @@ function reload(id) {
     
     const newBox = storeInput(id, expression, colorScheme);
     inputs.appendChild(newBox);
+    
+    plane.rotation.x = -Math.PI/2;
+    const positionAttribute = planeGeometry.getAttribute('position');
+    const vertex = new THREE.Vector3();
+    const colors = [];
+    let colorIndex = 0;
+    for (let i = 0; i < positionAttribute.count; i++) {
+	    vertex.fromBufferAttribute(positionAttribute, i);
+        const z = math.complex(vertex.x, vertex.y);
+        const func = math.evaluate(String.fromCodePoint(96+planeCounter).concat('(z) = ').concat(expression));
+        scope.set('z', z);
+        scope.set(String.fromCodePoint(96+id), func);
+        const result = math.evaluate(expression, scope);
+	    vertex.z = math.re(result);
+        const color = getColor(math.im(result), colorScheme);
+        colors[colorIndex++] = color.r;
+        colors[colorIndex++] = color.g;
+        colors[colorIndex++] = color.b;
+	    positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+        planeGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    }
+}
+
+function tempReload(id) {
+    const removedPlane = scene.getObjectByName(`ComplexPlane${id}`);
+    if(removedPlane) {
+        scene.remove(removedPlane);
+        removedPlane.geometry.dispose();
+        loadedPlanes.splice(loadedPlanes.indexOf(removedPlane), 1);
+    }
+    const planeGeometry = new THREE.PlaneGeometry(gridSize, gridSize, resolution, resolution);
+    const planeMaterial = new THREE.MeshBasicMaterial({vertexColors: true, wireframe: false, side: THREE.DoubleSide});
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    const planeName = `ComplexPlane${id}`;
+    plane.name = planeName;
+    scene.add(plane);
+    loadedPlanes.splice(id-1, 0, plane);
+    
+
+    const expression = planeFunctions.get(id);
+        
+    let colorScheme = planeColors.get(id);
     
     plane.rotation.x = -Math.PI/2;
     const positionAttribute = planeGeometry.getAttribute('position');
