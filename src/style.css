@@ -16,6 +16,7 @@ body {
     position:absolute;
     font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
     line-height: 19px;
+    height: 20px;
     padding: 1px;
 }
 #canvas-container {
@@ -235,8 +236,9 @@ label {
 }
 #function-textbox {
     pointer-events: auto;
-    left: 40px;
+    left: 42px;
     top: 0px;
+    height: 17px;
 }
 @media (max-width: 600px) {
 #input-menu {
