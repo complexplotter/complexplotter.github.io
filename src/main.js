@@ -138,6 +138,20 @@ scene.add(xAxis, zAxis);
 xAxis.rotateZ(Math.PI/2);
 zAxis.rotateX(Math.PI/2);
 
+const textGeometry = new THREE.PlaneGeometry(1.2, 1.2, 1, 1);
+const texLoader = new THREE.TextureLoader();
+const reTex = texLoader.load('assets/re.png');
+const imTex = texLoader.load('assets/im.png');
+const reMaterial = new THREE.MeshBasicMaterial({map: reTex, side: THREE.DoubleSide, transparent: true});
+const imMaterial = new THREE.MeshBasicMaterial({map: imTex, side: THREE.DoubleSide, transparent: true});
+const re = new THREE.Mesh(textGeometry, reMaterial);
+const im = new THREE.Mesh(textGeometry, imMaterial);
+scene.add(re, im);
+re.rotateX(-Math.PI/2);
+re.position.setX(gridSize/2+1);
+im.rotateX(-Math.PI/2);
+im.position.setZ(-(gridSize/2+1));
+
 
 
 const loadedPlanes = [];
@@ -264,7 +278,7 @@ function load() {
 
     let colorNeg = '#0000ff';
     let colorPos = '#ff0000';
-    let modulus = ((planeCounter-1 % 4) + 4) % 4;
+    /*let modulus = ((planeCounter-1 % 4) + 4) % 4;
     
     if(modulus===0) {
         colorNeg = '#0000ff';
@@ -278,7 +292,7 @@ function load() {
     } else {
         colorNeg = '#00ff00';
         colorPos = '#aa00ff';
-    }
+    }*/
     let colorScheme = [colorNeg, colorPos];
     planeColors.set(planeCounter, colorScheme);
     
@@ -425,6 +439,8 @@ gridSizeText.addEventListener('blur', (event) => {
         zAxis = new THREE.Mesh(axisGeometry, axisMaterial);
         xAxis.rotateZ(Math.PI/2);
         zAxis.rotateX(Math.PI/2);
+        re.position.setX(gridSize/2+1);
+        im.position.setZ(-(gridSize/2+1));
         gridHelper = new THREE.GridHelper(gridSize, gridSize);
         scene.add(xAxis, zAxis, gridHelper);
         reloadAll();
@@ -522,6 +538,8 @@ reloadSizeButton.addEventListener('click', (event) => {
     zAxis = new THREE.Mesh(axisGeometry, axisMaterial);
     xAxis.rotateZ(Math.PI/2);
     zAxis.rotateX(Math.PI/2);
+    re.position.setX(gridSize/2+1);
+    im.position.setZ(-(gridSize/2+1));
     gridHelper = new THREE.GridHelper(gridSize, gridSize);
     scene.add(xAxis, zAxis, gridHelper);
     reloadAll();

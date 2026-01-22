@@ -9,6 +9,15 @@
 body {
     margin: 0;
 }
+#fz {
+    background-color:white;
+    color:black;
+    width:100px;
+    position:absolute;
+    font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+    line-height: 19px;
+    padding: 1px;
+}
 #canvas-container {
     position: fixed;
     background-color: #0f0d0f;
@@ -226,6 +235,8 @@ label {
 }
 #function-textbox {
     pointer-events: auto;
+    left: 40px;
+    top: 0px;
 }
 @media (max-width: 600px) {
 #input-menu {
