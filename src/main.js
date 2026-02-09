@@ -140,8 +140,8 @@ zAxis.rotateX(Math.PI/2);
 
 const textGeometry = new THREE.PlaneGeometry(1.2, 1.2, 1, 1);
 const texLoader = new THREE.TextureLoader();
-const reTex = texLoader.load('./re.png');
-const imTex = texLoader.load('./im.png');
+const reTex = texLoader.load('re.png');
+const imTex = texLoader.load('im.png');
 const reMaterial = new THREE.MeshBasicMaterial({map: reTex, side: THREE.DoubleSide, transparent: true});
 const imMaterial = new THREE.MeshBasicMaterial({map: imTex, side: THREE.DoubleSide, transparent: true});
 const re = new THREE.Mesh(textGeometry, reMaterial);
